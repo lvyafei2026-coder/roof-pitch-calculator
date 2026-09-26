@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roof Pitch Calculator — Convert Rise/Run to Degrees, X:12 & Rafter Length</title>
+<meta name="description" content="Free roof pitch calculator. Enter rise and run, a degree angle, or a pitch ratio (X:12) to instantly get pitch ratio, angle, slope percentage, rafter length, and slope coefficient.">
+<meta name="keywords" content="roof pitch calculator, roof slope calculator, rise run to degrees, x:12 pitch, rafter length calculator, roof angle calculator">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="theme-color" content="#1e293b">
+
+<link rel="canonical" href="https://toolara.dev/roof-pitch-calculator/">
+<link rel="alternate" hreflang="en" href="https://toolara.dev/roof-pitch-calculator/">
+<link rel="alternate" hreflang="zh-Hans" href="https://toolara.dev/roof-pitch-calculator/zh/">
+<link rel="alternate" hreflang="x-default" href="https://toolara.dev/roof-pitch-calculator/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Roof Pitch Calculator — Convert Rise/Run to Degrees, X:12 & Rafter Length">
+<meta property="og:description" content="Enter rise and run, a degree angle, or a pitch ratio to instantly get pitch, slope, rafter length, and more.">
+<meta property="og:url" content="https://toolara.dev/roof-pitch-calculator/">
+<meta property="og:locale" content="en_US">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Roof Pitch Calculator",
+  "url": "https://toolara.dev/roof-pitch-calculator/",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Any",
+  "description": "Free roof pitch calculator that converts rise/run, degrees, and X:12 ratio, with rafter length and slope coefficient.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="lang-switch">
+    <select id="langSelect" onchange="setLang(this.value)" aria-label="Language">
+      <option value="en">English</option>
+      <option value="zh">简体中文</option>
+    </select>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-badge">🏗️ Roofing & Construction</div>
+    <h1 data-i18n="title">Roof Pitch Calculator</h1>
+    <p data-i18n="subtitle">Convert rise and run to degrees, X:12 ratio, slope percentage, and rafter length — instantly.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <h2 class="visually-hidden" data-i18n="calcHeading">Calculator</h2>
+
+    <div class="mode-tabs">
+      <button class="mode-tab active" data-mode="riseRun" onclick="switchMode('riseRun')" data-i18n="modeRiseRun">Rise & Run</button>
+      <button class="mode-tab" data-mode="angle" onclick="switchMode('angle')" data-i18n="modeAngle">Angle (°)</button>
+      <button class="mode-tab" data-mode="ratio" onclick="switchMode('ratio')" data-i18n="modeRatio">Pitch Ratio (X:12)</button>
+    </div>
+
+    <!-- Rise & Run -->
+    <div id="mode-riseRun" class="mode-panel">
+      <div class="row">
+        <div>
+          <label for="rise" data-i18n="riseLabel">Rise</label>
+          <input type="number" id="rise" min="0" step="0.01" placeholder="6" value="6" inputmode="decimal">
+        </div>
+        <div>
+          <label for="run" data-i18n="runLabel">Run</label>
+          <input type="number" id="run" min="0.01" step="0.01" placeholder="12" value="12" inputmode="decimal">
+        </div>
+      </div>
+      <div class="unit-toggle">
+        <label data-i18n="unitLabel">Unit:</label>
+        <button class="unit-btn active" data-unit="ft" onclick="setUnit('ft')">ft</button>
+        <button class="unit-btn" data-unit="in" onclick="setUnit('in')">in</button>
+        <button class="unit-btn" data-unit="m" onclick="setUnit('m')">m</button>
+        <button class="unit-btn" data-unit="cm" onclick="setUnit('cm')">cm</button>
+      </div>
+    </div>
+
+    <!-- Angle -->
+    <div id="mode-angle" class="mode-panel" style="display:none;">
+      <label for="angle" data-i18n="angleLabel">Roof angle (degrees)</label>
+      <input type="number" id="angle" min="0" max="89.9" step="0.1" placeholder="26.57" value="26.57" inputmode="decimal">
+    </div>
+
+    <!-- Ratio -->
+    <div id="mode-ratio" class="mode-panel" style="display:none;">
+      <label for="ratioX" data-i18n="ratioLabel">Pitch ratio (X in 12)</label>
+      <input type="number" id="ratioX" min="0" step="0.1" placeholder="6" value="6" inputmode="decimal">
+      <p class="hint" data-i18n="ratioHint">Enter the rise in inches over 12 inches of run. For example, 6 for a 6:12 pitch.</p>
+    </div>
+
+    <button class="calc" type="button" onclick="calculate()" data-i18n="calcBtn">Calculate roof pitch</button>
+
+    <!-- SVG Diagram -->
+    <div class="svg-wrap">
+      <svg id="roofSvg" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="roofGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#1e293b"/>
+            <stop offset="100%" stop-color="#334155"/>
+          </linearGradient>
+        </defs>
+        <!-- Ground line -->
+        <line x1="40" y1="180" x2="360" y2="180" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <!-- Roof triangle -->
+        <polygon id="roofTri" points="40,180 360,180 360,80" fill="url(#roofGrad)" opacity="0.15"/>
+        <line id="roofLine" x1="40" y1="180" x2="360" y2="80" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+        <!-- Run line -->
+        <line id="runLine" x1="40" y1="180" x2="360" y2="180" stroke="#f59e0b" stroke-width="2.5"/>
+        <text id="runLabel" x="200" y="200" text-anchor="middle" font-size="13" fill="#f59e0b" font-weight="600">Run</text>
+        <!-- Rise line -->
+        <line id="riseLine" x1="360" y1="180" x2="360" y2="80" stroke="#3b82f6" stroke-width="2.5"/>
+        <text id="riseLabel" x="375" y="135" font-size="13" fill="#3b82f6" font-weight="600">Rise</text>
+        <!-- Angle arc -->
+        <path id="angleArc" d="M 80 180 A 40 40 0 0 0 76 170" fill="none" stroke="#ef4444" stroke-width="2"/>
+        <text id="angleLabel" x="85" y="172" font-size="12" fill="#ef4444" font-weight="600">θ</text>
+      </svg>
+    </div>
+
+    <div id="result" role="region" aria-live="polite">
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="result-key" data-i18n="resPitch">Pitch (X:12)</div>
+          <div class="result-val" id="resPitch">—</div>
+        </div>
+        <div class="result-item">
+          <div class="result-key" data-i18n="resAngle">Angle</div>
+          <div class="result-val" id="resAngle">—</div>
+        </div>
+        <div class="result-item">
+          <div class="result-key" data-i18n="resSlope">Slope</div>
+          <div class="result-val" id="resSlope">—</div>
+        </div>
+        <div class="result-item">
+          <div class="result-key" data-i18n="resRafter">Rafter length</div>
+          <div class="result-val" id="resRafter">—</div>
+        </div>
+        <div class="result-item">
+          <div class="result-key" data-i18n="resCoeff">Slope coefficient</div>
+          <div class="result-val" id="resCoeff">—</div>
+        </div>
+        <div class="result-item">
+          <div class="result-key" data-i18n="resWalk">Walkability</div>
+          <div class="result-val" id="resWalk">—</div>
+        </div>
+      </div>
+
+      <div class="share-row">
+        <button class="share-btn" type="button" onclick="copyShareLink()" data-i18n="shareBtn">Copy shareable link</button>
+        <span class="share-copied" id="shareCopied" data-i18n="shareCopied">Copied!</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i18n="whatIsTitle">What is roof pitch?</h2>
+    <p data-i18n="whatIsText">Roof pitch describes how steep a roof is. It is usually expressed as a ratio, such as 6:12, which means the roof rises 6 inches for every 12 inches of horizontal run. Pitch can also be expressed in degrees or as a percentage slope. Roof pitch determines which roofing materials are code-compliant, how much surface area you need to cover, and how safely workers can move on the roof.</p>
+  </section>
+
+  <section>
+    <h2 data-i18n="commonTitle">Common roof pitches reference</h2>
+    <table>
+      <thead>
+        <tr><th data-i18n="thPitch">Pitch (X:12)</th><th data-i18n="thDeg">Degrees</th><th data-i18n="thSlope">Slope %</th><th data-i18n="thCoeff">Coefficient</th><th data-i18n="thWalk">Walkability</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>2:12</td><td>9.5°</td><td>16.7%</td><td>1.014</td><td data-i18n="walkEasy">Easy</td></tr>
+        <tr><td>3:12</td><td>14.0°</td><td>25.0%</td><td>1.031</td><td data-i18n="walkEasy">Easy</td></tr>
+        <tr><td>4:12</td><td>18.4°</td><td>33.3%</td><td>1.054</td><td data-i18n="walkEasy">Easy</td></tr>
+        <tr><td>5:12</td><td>22.6°</td><td>41.7%</td><td>1.083</td><td data-i18n="walkMod">Moderate</td></tr>
+        <tr><td>6:12</td><td>26.6°</td><td>50.0%</td><td>1.118</td><td data-i18n="walkMod">Moderate</td></tr>
+        <tr><td>7:12</td><td>30.3°</td><td>58.3%</td><td>1.158</td><td data-i18n="walkCare">With care</td></tr>
+        <tr><td>8:12</td><td>33.7°</td><td>66.7%</td><td>1.202</td><td data-i18n="walkSteep">Steep</td></tr>
+        <tr><td>9:12</td><td>36.9°</td><td>75.0%</td><td>1.250</td><td data-i18n="walkSteep">Steep</td></tr>
+        <tr><td>10:12</td><td>39.8°</td><td>83.3%</td><td>1.302</td><td data-i18n="walkSteep">Steep</td></tr>
+        <tr><td>12:12</td><td>45.0°</td><td>100.0%</td><td>1.414</td><td data-i18n="walkSteep">Steep</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2 data-i18n="formulaTitle">Formulas used</h2>
+    <ul>
+      <li data-i18n="formula1"><strong>Pitch ratio (X:12):</strong> (Rise ÷ Run) × 12</li>
+      <li data-i18n="formula2"><strong>Angle (degrees):</strong> arctan(Rise ÷ Run) × (180 ÷ π)</li>
+      <li data-i18n="formula3"><strong>Slope percentage:</strong> (Rise ÷ Run) × 100</li>
+      <li data-i18n="formula4"><strong>Rafter length:</strong> √(Rise² + Run²)</li>
+      <li data-i18n="formula5"><strong>Slope coefficient:</strong> √(1 + (Rise ÷ Run)²)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 data-i18n="howToTitle">How to use this calculator</h2>
+    <ol>
+      <li data-i18n="howTo1">Choose your input mode: Rise & Run, Angle, or Pitch Ratio (X:12).</li>
+      <li data-i18n="howTo2">Enter your measurements. If using Rise & Run, select your unit (ft, in, m, cm).</li>
+      <li data-i18n="howTo3">The results update instantly as you type — no submit button needed.</li>
+      <li data-i18n="howTo4">Click "Copy shareable link" to share your calculation with a colleague or contractor.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2 data-i18n="faqTitle">Frequently asked questions</h2>
+    <h3 data-i18n="faq1q">What is a walkable roof pitch?</h3>
+    <p data-i18n="faq1a">A roof pitch of 6:12 or less is generally considered walkable for most people. Above 7:12, roof jacks or fall protection are typically required. Above 9:12, most crews consider the roof non-walkable without special equipment.</p>
+
+    <h3 data-i18n="faq2q">What is the minimum roof pitch for asphalt shingles?</h3>
+    <p data-i18n="faq2a">Asphalt shingles require a minimum pitch of 2:12 with double underlayment. Below 2:12, you need a different roofing system such as EPDM, TPO, or modified bitumen.</p>
+
+    <h3 data-i18n="faq3q">How do I measure roof pitch from the attic?</h3>
+    <p data-i18n="faq3a">Hold a level horizontally against the underside of a rafter. Mark 12 inches along the level from where it touches the rafter. Measure vertically from that 12-inch mark up to the rafter. That vertical measurement in inches is your rise over 12 inches of run.</p>
+
+    <h3 data-i18n="faq4q">What is the slope coefficient and why does it matter?</h3>
+    <p data-i18n="faq4a">The slope coefficient converts horizontal footprint area to actual sloped roof surface area. For example, a 6:12 pitch has a coefficient of 1.118, meaning a 2,000 sq ft footprint has 2,236 sq ft of actual roof surface. This is the number you need for accurate material ordering.</p>
+
+    <h3 data-i18n="faq5q">What is the most common residential roof pitch?</h3>
+    <p data-i18n="faq5a">The most common US residential pitch is 6:12 (26.6°), which balances drainage, material cost, and walkability. In snowy regions, 8:12 to 10:12 is more common. In the UK and Europe, pitches are often expressed in degrees rather than X:12 ratios.</p>
+
+    <div class="disclaimer" data-i18n="disclaimer"><strong>Disclaimer:</strong> This calculator provides estimates for planning purposes. Always verify measurements on site and consult local building codes before starting any roofing project.</div>
+  </section>
+</main>
+
+<footer class="footer" data-i18n="footer">Runs entirely in your browser. No data is collected or stored.</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/calculator.js"></script>
+</body>
+</html>
